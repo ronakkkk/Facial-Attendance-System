@@ -1,0 +1,249 @@
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href={{ url_for('get_file', filename='mcss') }} id="mcss">
+    <script src={{ url_for('get_file', filename='jq') }}></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            
+            $("input:checkbox").on('click', function() {
+                  // in the handler, 'this' refers to the box clicked on
+                  var $box = $(this);
+                  if ($box.is(":checked")) {
+                    // the name of the box is retrieved using the .attr() method
+                    // as it is assumed and expected to be immutable
+                    var group = "input:checkbox[name='" + $box.attr("name") + "']";
+                    // the checked state of the group/box on the other hand will change
+                    // and the current value is retrieved using .prop() method
+                    $(group).prop("checked", false);
+                    $box.prop("checked", true);
+                  } 
+                  else 
+                  {
+                    $box.prop("checked", false);
+                  }
+                });
+            var arr = [];
+            var x=$("#dpmts").val()
+            var row = "{{ department_dict| safe }}";
+              console.log(row);
+              row = row.replace(/'/g,"\"") // JSON only accepts ", not ' so replacing
+              row = row.replaceAll("nan", "0")  
+                   .replaceAll("None", "0")
+                   .replaceAll("nan", "0")
+                   .replace(/\\&/g, "\\&")
+                   .replace(/\\r/g, "\\r")
+                   .replace(/\\t/g, "\\t")
+                   .replace(/\\b/g, "\\b")
+                   .replace(/\\f/g, "\\f");
+
+            row = row.replace(/[\u0000-\u0019]+/g,""); 
+            var rows = JSON.parse(row)
+            console.log(rows);
+            var row2 = "{{ department_names_dict| safe }}";
+              console.log(row2);
+              row2 = row2.replace(/'/g,"\"") // JSON only accepts ", not ' so replacing
+              row2 = row2.replaceAll("nan", "0")  
+                   .replaceAll("None", "0")
+                   .replaceAll("nan", "0")
+                   .replace(/\\&/g, "\\&")
+                   .replace(/\\r/g, "\\r")
+                   .replace(/\\t/g, "\\t")
+                   .replace(/\\b/g, "\\b")
+                   .replace(/\\f/g, "\\f");
+
+            row2 = row2.replace(/[\u0000-\u0019]+/g,""); 
+            var rows2 = JSON.parse(row2)
+            console.log(rows2);
+            $("#push_flag_y").prop("checked", true);
+            $("#push_flag_n").prop("checked", false);
+
+            $("#dpmts").on("change", function(){
+                var num = $(this).val();
+                console.log(num);
+                var name = rows2[num];
+                console.log(name);
+                console.log(rows[name][1]);
+                // hod = rows[name][0],
+                loc = rows[name][1];
+                // $("#curhod").html(hod)
+                $("#curlocation").html(loc)
+                console.log(rows[name][3]);
+                var flag = rows[name][3]
+                // if (flag == 'y'){
+                //     console.log('1');
+                //     $("#push_flag_y").prop("checked", true);
+                //     $("#push_flag_n").prop("checked", false);
+                // }
+                // else if (flag == 'n'){
+                //     console.log('2');
+                //     $("#push_flag_n").prop("checked", true);
+                //     $("#push_flag_y").prop("checked", false);
+                // }
+                // else {
+                //     console.log('3');
+                //     $("#push_flag_y").prop("checked", true);
+                //     $("#push_flag_n").prop("checked", false);
+                // }
+                if (flag == 'y'){
+                    $("#curflag").html("Yes")
+                }
+                else {
+                    $("#curflag").html("No")
+                }
+            })
+
+    });
+
+    </script>
+    <style>
+        ul {
+            list-style: none;
+            margin: 0px 0px 5px;
+        }
+        .okay{
+            border-color:#0F0;
+            border-radius: 4px;
+            border-width: 4px;
+        }
+        .error{
+            border-color:#F00;
+        }
+        .weekDays-selector input {
+          display: none!important;
+        }
+
+        .weekDays-selector input[type=checkbox] + label {
+          display: inline-block;
+          border-radius: 6px;
+          background: #dddddd;
+          height: 30px;
+          width: 40px;
+          margin-right: 3px;
+          line-height: 30px;
+          text-align: center;
+          cursor: pointer;
+        }
+
+        .weekDays-selector input[type=checkbox]:checked + label {
+          background: #2AD705;
+          color: #ffffff;
+        }
+    </style> 
+</head>
+{% extends "layout.html" %}
+    {% block content %}
+    <div>
+        <form action={{ url_for('update_details_dpmt') }} method="post" name="reportform">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <h2> Update Department Details</h2>
+                    <table class="table table-hover table-sm">
+                        <tr class="table-info" >
+                           <td> Select Department</td>
+                           <td> <select name="dpmts" id="dpmts">
+                                    <option value=""> Select Department</option>>
+                                    {% for dept in department_names %}
+                                        <option value={{ dept[0] }}>{{ dept[1] }}</option>
+                                    {% endfor %}
+                                </select> 
+                            </td>
+                        </tr>
+                        <tr class="table-info" > 
+                            <td> Update Department Name: </td>
+                            <td><input type='text' maxlength="50" name = 'dname' id="dname"> 
+                            </td>
+                        </tr>
+                        <!-- <tr class="table-info" > 
+                            <td> Current HOD: </td>
+                            <td><span name = 'curhod' id="curhod"></span>
+                            </td>
+                        </tr> -->
+                        <!-- <tr class="table-info" >  -->
+                            <!-- <td> Update HOD: </td>
+                            <td> <select name="hods" id="hods">
+                                    <option value=" "> Select HOD</option>
+                                    {% for hod in hod_list %}
+                                        if hod[0]==document.getElementsByName("t")
+                                        <option value={{ location }}>{{ location }}</option>
+                                    {% endfor %}
+                                </select>  -->
+                            </<!-- td>
+                        </tr> -->
+                        <tr class="table-info" > 
+                            <td> Current Location: </td>
+                            <td><span name = 'curlocation' id="curlocation"></span>
+                            </td>
+                        </tr>
+                        <tr class="table-info" > 
+                            <td> Update Location: </td>
+                            <!-- <td><input type='text' maxlength="50" name = 'dlocation' id="dlocation"> 
+                            </td> -->
+                            <td> <select name="dlocations" id="dlocations">
+                                    <option value=""> Select Location</option>
+                                    {% for location in locations %}
+                                        <option value="{{ location }}">{{ location }}</option>
+                                    {% endfor %}
+                                </select> 
+                            </td>
+                        </tr>
+                        <tr class="table-info" > 
+                            <td> Current Flag for HRMS update: </td>
+                            <td><span name = 'curflag' id="curflag"></span>
+                            </td>
+                        </tr>
+                        <tr class="table-info" > 
+                            <td> Update Flag to push data to HRMS: </td>
+                            <!-- <td><input type='text' maxlength="50" name = 'dlocation' id="dlocation"> 
+                            </td> -->
+                            <td> <select name="push_flag" id="push_flag">
+                                    <option value=""> Select Flag</option>
+                                    <option value="y">Yes</option>
+                                    <option value="n">No</option>
+                                </select> 
+                            </td>
+                        </tr>
+                        <!-- <tr class="table-info">
+                            <td> Push Data in HRMS: </td>
+                            <td> <input type='radio' name='push_flag_y' id = 'push_flag_y' value='y' ><label for="push_flag_y">Yes</label><br>
+                            <input type='radio' name='push_flag_n' id = 'push_flag_n' value='n'><label for="push_flag_n">No</label><br>
+                            </td>
+                        </tr> -->
+                        <tr>
+                        <td></td>
+                        <td colspan="4">
+                            <button type="submit" name='update' id='update_button' class="btn btn-primary btn btn-block active">Update Details</button>
+                        </td>
+                        </tr>
+                        <!-- <tr class="table-info" > 
+                            <td> Current Weekly Off: </td>
+                            <td><span name = 'off' id="off"></span>
+                            </td>
+                        </tr> -->
+                        <!-- <tr class="table-info" >      
+                            <td> Update Weekly Off (Select the weekly off day) </td>
+                            <td class="weekDays-selector">
+                                  <input type="checkbox" id="weekday-mon" class="radio" name='weekday[1][]' value='monday'/>
+                                    <label for="weekday-mon">Mon</label>
+                                  <input type="checkbox" id="weekday-tue" class="radio" name='weekday[1][]' value='tuesday'/>
+                                    <label for="weekday-tue">Tue</label>
+                                  <input type="checkbox" id="weekday-wed" class="radio" name='weekday[1][]' value='wednesday'/>
+                                    <label for="weekday-wed">Wed</label>
+                                  <input type="checkbox" id="weekday-thu" class="radio" name='weekday[1][]' value='thrusday'/>
+                                    <label for="weekday-thu">Thu</label>
+                                  <input type="checkbox" id="weekday-fri" class="radio" name='weekday[1][]' value='friday'/>
+                                    <label for="weekday-fri">Fri</label>
+                                  <input type="checkbox" id="weekday-sat" class="radio" name='weekday[1][]' value='saturday'/>
+                                    <label for="weekday-sat">Sat</label>
+                                  <input type="checkbox" id="weekday-sun" class="radio" name='weekday[1][]' value='sunday'/>
+                                    <label for="weekday-sun">Sun</label>
+                            </td>
+                        </tr> -->
+                </table>
+                <button id='cam_log' name='cam_logs' type='submit' class="btn btn-primary btn btn-block active" style="display:none">Search Employee</button> 
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endblock %}

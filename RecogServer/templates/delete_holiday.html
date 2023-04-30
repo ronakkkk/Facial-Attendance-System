@@ -1,0 +1,90 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src={{ url_for('get_file', filename='jq') }}></script>
+
+    <style>
+        .okay{
+            border-color:#0F0;
+            border-radius: 4px;
+            border-width: 4px;
+        }
+        .error{
+            border-color:#F00;
+        }
+        .weekDays-selector input {
+          display: none!important;
+        }
+
+        .weekDays-selector input[type=checkbox] + label {
+          display: inline-block;
+          border-radius: 6px;
+          background: #dddddd;
+          height: 40px;
+          width: 30px;
+          margin-right: 3px;
+          line-height: 40px;
+          text-align: center;
+          cursor: pointer;
+        }
+
+        .weekDays-selector input[type=checkbox]:checked + label {
+          background: #2AD705;
+          color: #ffffff;
+        }
+    </style> 
+</head>
+{% extends "layout.html" %}
+    {% block content %}
+    <div style="margin-left: 60px;">
+        <form action={{ url_for('remove_holiday') }} method="post" name="loginform">
+            <div>
+                <div>
+                    <table class="table table-hover">
+                        <th colspan="2"> Delete Holiday </th>
+                        <tr class="table-info" ><td> Select Holiday</td>
+                            <td> <select name="hdays" id="hdays" >
+                                    <option value=""> Select Holiday</option>
+                                    {% for row in holidays %}
+                                    <option value="{{row}}">{{row}}</option>
+                                    {% endfor %}
+                                </select> 
+                            </td>
+                        </tr>                       
+                        <tr>
+                          <td colspan="2">
+                            <button id='confirm' name='confirm' type='submit' class="btn btn-primary btn btn-block active">Delete</button>
+                          </td>
+                        </tr>        
+                    </tr>
+                </table>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <p align="center"><iframe src={{ url_for('monthly_table_display') }} width="80%" height="400px"></iframe></p>
+    <!-- <iframe src={{ url_for('monthly_table_display') }} width="80%" height="400px"></iframe> -->
+    <!-- <div><tr class="table-info" style="display:none"><td></td></tr>
+    <tr class="table-info" style="display:none"><td></td></tr>
+    <tr class="table-info" style="display:none"><td></td></tr>
+    <tr class="table-info" style="display:none"><td></td></tr>
+    <tr class="table-info" style="display:none"><td></td></tr>
+    <tr class="table-info" style="display:none"><td></td></tr></div> -->
+
+    <!-- <script>
+        var checkEnable = function(){
+            // var is_checked = $('input[type=checkbox]:checked').length;
+            htype = document.getElementById('htype');
+            dpmts = document.getElementById('dpmts');
+
+            if(htype.value == "Department"){
+                dpmts.disabled = false;
+            }
+            else{
+                dpmts.disabled = true;
+            }
+        }
+
+    </script> -->
+    {% endblock %}

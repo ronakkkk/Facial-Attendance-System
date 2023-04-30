@@ -1,0 +1,141 @@
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src={{ url_for('get_file', filename='jq') }}></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var x = "{{msg}}"
+            var name= {{ name | safe}}
+            console.log(name[0])
+            console.log(x=='', name)
+            // $('.alert').hide()
+            // if (x!=''){
+            //     $('.alert').show()
+            // }
+            $('#rname').on("change", function(){
+                var txt = $(this).val().toLowerCase()
+                console.log(txt)
+                for (var i = 0; i < name.length; i++) {
+                    if (name[i]==txt){
+                        console.log('x')
+                        $(this).addClass("error")
+                        break
+                    }
+                    else{
+                        $(this).removeClass("error")
+                        $(this).addClass("okay")
+                    }
+                }
+                // console.log('rest', txt)
+            });
+            $('.weekDays-selector').on("change", function(){
+                console.log('x')
+                var arr = [];
+                $.each($("input[name='weekday']:checked"), function(){
+                  arr.push($(this).val());
+              });
+                console.log(arr)
+                $("#wklyoff").val(arr.toString())
+            });
+    });
+
+    </script>
+    <style>
+        .okay{
+            border-color:#0F0;
+            border-radius: 4px;
+            border-width: 4px;
+        }
+        .error{
+            border-color:#F00;
+        }
+        .weekDays-selector input {
+          display: none!important;
+        }
+
+        .weekDays-selector input[type=checkbox] + label {
+          display: inline-block;
+          border-radius: 6px;
+          background: #dddddd;
+          height: 40px;
+          width: 30px;
+          margin-right: 3px;
+          line-height: 40px;
+          text-align: center;
+          cursor: pointer;
+        }
+
+        .weekDays-selector input[type=checkbox]:checked + label {
+          background: #2AD705;
+          color: #ffffff;
+        }
+    </style> 
+</head>
+{% extends "layout.html" %}
+    {% block content %}
+    <div>
+        <form action={{ url_for('add_dept_details') }} method="post" name="loginform">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <table class="table table-hover">
+                        <th colspan="2"> Add Department </th>
+                        <tr class="table-info"> 
+                            <td> Enter Department Name: </td>
+                            <td><input type='text' maxlength="50" name = 'rname' id="rname"> 
+                            </td>
+                        </tr>
+                        <tr class="table-info" >      
+                            <td> Select Location: </td>
+                            <td >
+                                <select id='locationdropdown' name='locationdropdown'>
+                                    <option value=""> Select Location </option>
+                                    {% for location in locations %}
+                                        <option value="{{ location }}">{{ location }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="table-info">
+                            <td> Push Data in HRMS: </td>
+                            <td>
+                                <input type='radio' name='push_flag' value='n' checked>No &nbsp;
+                                <input type='radio' name='push_flag' value='y'>Yes
+                            </td>
+                        </tr>
+                        <!-- <tr class="table-info"> 
+                            <td> Enter Location: </td>
+                            <td><input type='text' maxlength="50" name = 'rlocation' id="rlocation"> 
+                            </td>
+                        </tr> -->
+                        <!-- <tr class="table-info">      
+                            <td> Department Weekly Off (Select the weekly off day) </td>
+                            <td class="weekDays-selector">
+                                  <input type="checkbox" id="weekday-mon" class="weekday" name='weekday' value='monday'/>
+                                    <label for="weekday-mon">Mon</label>
+                                  <input type="checkbox" id="weekday-tue" class="weekday" name='weekday' value='tuesday'/>
+                                    <label for="weekday-tue">Tue</label>
+                                  <input type="checkbox" id="weekday-wed" class="weekday" name='weekday' value='wednesday'/>
+                                    <label for="weekday-wed">Wed</label>
+                                  <input type="checkbox" id="weekday-thu" class="weekday" name='weekday' value='thrusday'/>
+                                    <label for="weekday-thu">Thu</label>
+                                  <input type="checkbox" id="weekday-fri" class="weekday" name='weekday' value='friday'/>
+                                    <label for="weekday-fri">Fri</label>
+                                  <input type="checkbox" id="weekday-sat" class="weekday" name='weekday' value='saturday'/>
+                                    <label for="weekday-sat">Sat</label>
+                                  <input type="checkbox" id="weekday-sun" class="weekday" name='weekday' value='sunday'/>
+                                    <label for="weekday-sun">Sun</label>
+                            </td>
+                        </tr> -->
+                        <tr colspan="2">
+                        <td>
+                            <button id='confirm' name='confirm' id='confirm_button' type='submit' class="btn btn-primary btn-lg btn-block active">Confirm</button>
+                        </td>
+                    </tr>
+                </table>
+                <input type='text' name = 'wklyoff' id="wklyoff" hidden> 
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endblock %}

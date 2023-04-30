@@ -1,0 +1,104 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src={{ url_for('get_file', filename='jq') }}></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var x = "{{msg}}"
+            var name= {{ name | safe}}
+            console.log(name[0])
+            console.log(x=='', name)
+            // $('.alert').hide()
+            // if (x!=''){
+            //     $('.alert').show()
+            // }
+            $( "#locations" )[0].scrollIntoView();
+            
+            $('#lname').on("change", function(){
+                var txt = $(this).val().toLowerCase()
+                console.log(txt)
+                for (var i = 0; i < name.length; i++) {
+                    if (name[i]==txt){
+                        console.log('x')
+                        $(this).addClass("error")
+                        break
+                    }
+                    else{
+                        $(this).removeClass("error")
+                        $(this).addClass("okay")
+                    }
+                }
+              });
+
+          });
+
+
+    </script>
+    <style>
+        .okay{
+            border-color:#0F0;
+            border-radius: 4px;
+            border-width: 4px;
+        }
+        .error{
+            border-color:#F00;
+        }
+        .weekDays-selector input {
+          display: none!important;
+        }
+
+        .weekDays-selector input[type=checkbox] + label {
+          display: inline-block;
+          border-radius: 6px;
+          background: #dddddd;
+          height: 40px;
+          width: 30px;
+          margin-right: 3px;
+          line-height: 40px;
+          text-align: center;
+          cursor: pointer;
+        }
+
+        .weekDays-selector input[type=checkbox]:checked + label {
+          background: #2AD705;
+          color: #ffffff;
+        }
+    </style> 
+</head>
+{% extends "layout.html" %}
+    {% block content %}
+    <div class="container">
+        <form action={{ url_for('add_loc_details') }} method="post" name="loginform">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <table class="table table-hover">
+                        <th colspan="2"> Add Office Location </th>
+                        <tr class="table-info"> 
+                        <tr id='new_cat' class="table-info">
+                          <td> Enter New Office Location: </td>
+                          <td><input type='text' name='lname' style="width:200px;" value=""></td>
+                        </tr>                       
+                        <tr>
+                          <td colspan="2">
+                            <button id='confirm' name='confirm' type='submit' class="btn btn-primary btn btn-block active">Confirm</button>
+                          </td>
+                        </tr>        
+                    </tr>
+                </table>
+                <table class="table table-hover" id='locations'>
+                  <thead>
+                    <th> List of Added Locations</th>
+                  </thead>
+                  <tbody>
+                    {% for row in lname %}
+                        <tr class="table-info">
+                          <td width="10px">{{row}}</td>
+                        </tr>
+                    {% endfor %}
+                  </tbody>    
+                </table>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endblock %}

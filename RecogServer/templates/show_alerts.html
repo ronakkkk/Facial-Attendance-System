@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+    {% block content %}
+
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <form action={{ url_for('indiv_alert') }} method='post' onclick="">
+                <table class="table table-hover">
+                    <tr>
+                        <td colspan={{ colsize }} class="text-center" style="font-size: x-large;">See individual alerts for</td>
+                    </tr>
+                    {% for us in unique_user_ids %}
+                        <tr>
+                            {% for u in us %}
+                                <td>
+                                    <input type="checkbox" name={{ u }} value={{ u }}>{{ u }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan={{ colsize }} class="text-center">
+                            <button type="submit" class="btn btn-danger btn-lg active">See Alerts</button>
+                        </td>
+                    </tr>
+
+                </table>
+                <input type='hidden' name='startdate' value={{ start_date }}>
+                <input type='hidden' name='enddate' value={{ end_date }}>
+            </form>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <a href={{ url_for('download_log', filename=download_file) }} class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Download Log</a>
+
+            <table class="table table-hover">
+
+                <thead class="thead-light">
+                    <tr>
+                        {% for col in columns %}
+                            <td>{{ col }}</td>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vals in values %}
+                        <tr>
+                            {% for v in vals %}
+                                <td>{{ v }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    {% endblock %}

@@ -1,0 +1,340 @@
+<!--<!DOCTYPE html>
+<html>
+<head>
+  <link rel="shortcut icon" href="/static/fav" type="image/x-icon">
+  <title>Upload Data</title>
+</head>
+<body>-->
+{% extends "layout.html" %}
+{% block content %}
+
+<p style="font-size: large;" ><b>Image Instruction</b></p>
+<ol>
+    <li>All photos should be front facing (passport size).</li>
+    <li>There should not be light reflection from backside of the user while taking picture.</li>
+    <li>Camera should be adjusted to focus on the user face instead ceiling.</li>
+    <li>Temperature and date/time stamp should not be printed on user photo.</li>
+    <li>Faces should not be titled up or down or sideways for training purposes.</li>
+    <li>Light should face the person so that the face is clearly visible and no shadows form on the face.</li>
+    <li>Full face should come in the recognition picture, some picture are cut and partial face is visible. Full face means ear to ear from the sides and hair to chin from top to bottom.</li>
+</ol>
+
+<p><b>Example of Bad Pictures</b></p>
+  <img src={{ url_for('get_bad_img', fileid=1) }} style="width: 200px; height: auto;">
+  <img src={{ url_for('get_bad_img', fileid=2) }} style="width: 200px; height: auto;">
+  <img src={{ url_for('get_bad_img', fileid=3) }} style="width: 200px; height: auto;">
+<p><b>Example of Good Pictures</b></p>
+  <img src={{ url_for('get_good_img', fileid=1) }} style="width: 100px; height: auto;">
+  <img src={{ url_for('get_good_img', fileid=2) }} style="width: 100px; height: auto;">
+
+<br><br>
+
+<form id="deviceSelector">
+  <select id="selectDevice">
+    <option>Choose a device</option>
+  </select>
+</form>
+<button id="btnLoadDevice" class="btn btn-primary btn-lg active" onclick="loadDevices()">Load Devices</button>
+<button id="btnDevice" class="btn btn-primary btn-lg active" onclick="clickDeviceButton()">Select Device</button>
+
+
+ <form action={{ url_for('capture_from_camera') }} method="post" name="mainForm" onsubmit="return Validate()">
+  <div>
+  <input id="rnum" type="hidden" name="rid" value={{ user_id }} required>
+  <input id="ufname" type="hidden" name="ufname" value={{ user_first_name }} required>
+  <input id="umname" type="hidden" name="umname" value={{ user_middle_name }}>
+  <input id="ulname" type="hidden" name="ulname" value={{ user_last_name }} required>
+  <input id="threat" type="hidden" name="threat" value={{ threat }} required>
+  </div>
+  <input name="imgData" id='imgData' type="hidden"/ required>
+    <button id="upload" type="submit" class="btn btn-primary btn-lg active">Submit</button>
+</form>
+<div class="video-wrap" style="align-self: center;">
+    <video id="video" width="640" height="480" playsinline autoplay></video>
+</div>
+<canvas id="canvas" width="640" height="480" name="canvas"></canvas>
+<!-- Trigger canvas web API -->
+    <button id="snap" class="btn btn-primary btn-lg active">Capture</button>
+    <button id="reset" class="btn btn-primary btn-lg active" onclick="retake()">Retake</button>
+<br> <span id=uploading style="display:none;"> Uploading has begun . . .  </span> 
+         <span id=uploaded  style="display:none;"> Success, your photo has been uploaded! </span> 
+<!-- Webcam video snapshot -->
+
+
+  <script type="text/javascript">
+    const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const snap = document.getElementById("snap");
+const rstBtn = document.getElementById("reset");
+const snapBtn = document.getElementById("snap");
+const upBtn = document.getElementById("upload");
+const fname = document.getElementById("fname");
+const lname = document.getElementById("lname");
+const deviceBtn = document.getElementById("btnDevice");
+
+
+const errorMsgElement = document.querySelector('span#errorMsg');
+    canvas.style.display = "none";
+    rstBtn.style.display = "none";
+const constraints = {
+  audio: false,video: true 
+  //video: {
+    //width: 1280, height: 720//,facingMode: 'user'
+  //}
+};
+function Validate(){
+  if(canvas.style.display=="none"){
+      return false;
+    } else {
+      return true;
+    }
+}
+upBtn.addEventListener("click", function(){
+                if(canvas.style.display=="none"){
+                    alert("Take a Photo!");
+                } else {
+                    var dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+                    document.getElementById("imgData").value = dataUrl;
+                    var fd = new FormData(document.forms["mainForm"]);
+                    $("#uploading").show();
+                    $.ajax({
+                      type: "POST",
+                      contentType: 'application/json;charset=UTF-8',
+                      url: "127.0.0.1:5000/storeImage",
+                      data: fd,
+                      dataType: "json"
+                    }).done(function(msg) {
+                      console.log("saved");
+                      $("#uploading").hide();
+                      $("#uploaded").show();
+                    });
+                    }
+            });
+var selectDevice = document.getElementById("selectDevice");
+navigator.mediaDevices.enumerateDevices().then(function(devices) {
+  devices.forEach(function(device) {
+    //console.log(device.kind + ": " + device.label +" id = " + device.deviceId);
+    
+    if(true){
+      //device.kind === "videoinput"){
+      var el = document.createElement("option");
+      el.textContent = device.kind+device.label+device.deviceId;
+      el.value = device.deviceId;
+      selectDevice.appendChild(el);
+
+    }
+  });
+})
+
+
+// navigator.bluetooth.getAvailability().then(available => {
+//   if (available)
+//       console.log("This device supports Bluetooth!");
+//   else
+//       console.log("Doh! Bluetooth is not supported");
+// });
+
+// var readerPromise = navigator.bluetooth.enumerateDevices()
+// console.log("read"+readerPromise)
+
+// navigator.bluetooth.getDevices()
+// .then(devices => {
+//   console.log("Total devices: " + devices.length);
+//   devices.forEach(device => {
+//     console.log('> Requested ' + device.name + ' (' + device.id + ')');
+//     if(true){
+//       //device.kind === "videoinput"){
+//       var el = document.createElement("option");
+//       el.textContent = device.name+device.id;
+//       el.value = device.id;
+//       selectDevice.appendChild(el);
+//     }
+//   });
+// }).catch(error => {
+//     console.log('Bluetooth error: ! ' + error);
+//   });
+
+function loadDevices(){
+  navigator.bluetooth.requestDevice({
+ // filters: [...] <- Prefer filters to save energy & show relevant devices.
+    acceptAllDevices: true
+  })
+  .then(device => {
+    console.log('> Requested ' + device.name + ' (' + device.id + ')');
+    if(true){
+      //device.kind === "videoinput"){
+      var el = document.createElement("option");
+      el.textContent = device.name+device.id;
+      el.value = device.id;
+      selectDevice.appendChild(el);
+    }
+
+  })
+  .catch(error => {
+    console.log('Argh! ' + error);
+  });
+  navigator.usb.requestDevice({
+ // filters: [...] <- Prefer filters to save energy & show relevant devices.
+    acceptAllDevices: true
+  })
+  .then(device => {
+    console.log("Product name: " + device.productName + ", serial number " + device.serialNumber);
+	if(true){
+		//device.kind === "videoinput"){
+		var el = document.createElement("option");
+        el.textContent = device.productName+device.serialNumber;
+        el.value = device.serialNumber;
+        selectDevice.appendChild(el);
+      }
+  })
+  .catch(error => {
+    console.log('Argh! ' + error);
+  });
+
+  // navigator.usb.getDevices()
+  // .then(devices => {
+  //   console.log("Total devices: " + devices.length);
+  //   devices.forEach(device => {
+  //     console.log("Product name: " + device.productName + ", serial number " + device.serialNumber);
+  //     if(true){
+  //       //device.kind === "videoinput"){
+  //       var el = document.createElement("option");
+  //       el.textContent = device.productName+device.serialNumber;
+  //       el.value = device.serialNumber;
+  //       selectDevice.appendChild(el);
+  //     }
+  //   });
+  // }).catch(error => {
+  //     console.log('usb error: ! ' + error);
+  //   });
+
+}
+
+
+
+
+var videoConstraints=null;
+console.log("1"+selectDevice.toString())
+console.log("2"+selectDevice.value)
+
+
+
+const constraints3 = {
+  audio: false,
+  video: {
+    width: 1280, height: 1280,facingMode: 'user'
+  }
+};
+
+//console.log("before loading",selectDevice.value,"value: ",videoConstraints);
+function clickDeviceButton(){
+  //console.log("before loading const",typeof videoConstraints,"value: ",videoConstraints);
+  loadConstraints();
+  //videoConstraints=constraints3;
+  console.log("after loading const",typeof videoConstraints,"value: ",videoConstraints);
+  if(video.srcObject!=null){
+    video.srcObject.getTracks().forEach(function(track) {
+        if (track.readyState == 'live') {
+            track.stop();
+        }
+    })
+  }else{
+    console.log("video stream not started")
+  }
+  
+  videoStreaming(videoConstraints)
+  console.log("after loading",selectDevice.value);
+  //video.style.display = "block";
+};
+
+function loadConstraints() {
+  var selectDevice = document.getElementById("selectDevice");
+  //console.log(selectDevice.value)
+  try {
+    navigator.mediaDevices.enumerateDevices().then(function(devices) {
+      //console.log("devices: "+devices)
+      devices.forEach(function(device) {
+        //console.log("device: "+device)
+        //console.log(device.kind + ": " + device.label +" id = " + device.deviceId);
+        
+        if(selectDevice.value!=null && device.kind === "videoinput" && device.deviceId == selectDevice.value ){
+          console.log("inside: ",selectDevice.value)
+          videoConstraints=null
+          videoConstraints = {
+            audio: true,
+            video: {
+              width: 1280, height: 720,deviceId: device.deviceId 
+            }
+          };
+          //console.log("inside: ",typeof videoConstraints,"value: ",videoConstraints)
+          //videoConstraints.video.deviceId={exact:device.deviceId}
+        }
+      });
+    })
+    //const stream=selectDevice.value.getUserMedia()
+    //const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    //handleSuccess(stream);
+  } catch (e) {
+    console.log(e.toString())
+    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+  }
+}
+
+async function init() {
+  try {
+    console.log("5"+typeof videoConstraints)
+    console.log("6"+typeof selectDevice.value)
+    video.srcObject=new MediaStream(navigator.mediaDevices.getUserMedia(videoConstraints))
+    //video.srcObject = await navigator.mediaDevices.getUserMedia(videoConstraints);
+    //video.srcObject = stream
+    //handleSuccess(stream);
+  } catch (e) {
+    console.log("error: "+e.toString+e)
+    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+  }
+}
+
+function videoStreaming(constraints2){
+  navigator.mediaDevices.getUserMedia(constraints2)
+  .then(function(mediaStream) {
+    var video = document.querySelector('video');
+    video.srcObject = mediaStream;
+    video.onloadedmetadata = function(e) {
+      video.play();
+    };
+  })
+  .catch(function(err) { console.log(err.name + ": " + err.message); });
+}
+
+// Success
+function handleSuccess(stream) {
+  window.stream = stream;
+  video.srcObject = stream;
+}
+
+// retake
+function retake(){  
+    video.style.display = "block";
+    canvas.style.display = "none";
+    rstBtn.style.display = "none";
+   snapBtn.style.display = "block"; 
+}
+
+// Load init
+loadConstraints()
+videoStreaming(constraints)
+
+
+// Draw image
+var context = canvas.getContext('2d');
+snap.addEventListener("click", function() {
+    video.style.display = "none";
+    canvas.style.display = "block";
+    context.drawImage(video, 0, 0, 640, 480);
+    rstBtn.style.display = "block";
+   snapBtn.style.display = "none"; 
+});
+  </script>
+{% endblock %}
+<!--</body>
+</html>-->

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <link rel="stylesheet" href={{ url_for('get_file', filename='bs-css') }}>
+        <script src={{ url_for('get_file', filename='jq') }}></script>
+        <script src={{ url_for('get_file', filename='popper') }}></script>
+        <script src={{ url_for('get_file', filename='bootstrap.js.map') }}></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js" integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css"/>  -->      
+    
+        <script>
+            $(document).ready(function() {
+                $('#example').DataTable(
+                    {
+                        "searching": false,
+                        "dom": '<"top"i>rt<"bottom"lp><"clear">',
+                        "lengthMenu": [ [10, 50, 100, -1], [10, 50, 100, "All"] ],
+                        "fixedColumns":   {
+                                            "leftColumns": 1,
+                                        }
+                        
+                    });
+            });
+        </script>
+        <style type="text/css">
+            .dataTables_wrapper .dataTables_info{
+                    clear: both;
+                    float: left;
+                    padding-top: .2em;
+                    font-size: 12px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <table class="table table-hover table-bordered table-sm table-striped table-condensed" id="example">
+            <div>
+                <style scoped>
+
+                    th {
+                    position: -webkit-sticky;
+                    position: sticky;
+                    top: 0;
+                    z-index: 2;
+                    font-size: 13px;
+                    width: auto;
+                    padding: 2px;
+                    }
+
+                    th[scope=row] {
+                    position: -webkit-sticky;
+                    position: sticky;
+                    left: 0;
+                    z-index: 1;
+                    width: auto;
+                    padding: 2px;
+                    }
+
+                    th[scope=row] {
+                    vertical-align: top;
+                    width: auto;
+                    padding: 2px;
+                    color: inherit;
+                    background-color: inherit;
+                    background: linear-gradient(90deg, transparent 0%, transparent calc(100% - .05em), #d6d6d6 calc(100% - .05em), #d6d6d6 100%);
+                    }
+
+                    tbody {
+                    color: inherit;
+                    vertical-align: top;
+                    font-size: 13px;
+                    background-color: inherit;
+                    background: linear-gradient(90deg, transparent 0%, transparent calc(100% - .05em), #d6d6d6 calc(100% - .05em), #d6d6d6 100%);
+                    text-align: center;
+                    margin: 0px;
+                    padding: 1px;
+                    }
+
+                </style>
+                <thead class="thead-light">
+                    <!-- displaying the headings over here -->
+                    <tr>
+                        {% for col in online_columns %}
+                            <div style="word-wrap: break-word;">
+                                <th style="position: sticky;">{{col}}</th>
+                            </div>
+                        {% endfor %}
+                    </tr>
+                </thead>
+            </div>
+            <tbody>
+            {% for vals in online_values %}
+            <tr>
+                {% for v in vals %}
+                    <td width="10px">{{v}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    
+    </body>
+</html> 

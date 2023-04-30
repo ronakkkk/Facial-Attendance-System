@@ -1,0 +1,245 @@
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href={{ url_for('get_file', filename='mcss') }} id="mcss">
+    <script src={{ url_for('get_file', filename='jq') }}></script>
+    <!-- <script src={{ url_for('get_file', filename='mjq') }}></script> -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var arr = [];
+            $('.weekDays-selector').on("change", function(){
+                $("#t2").show()
+                $("#dly_log").show()
+
+            });
+            // $('#en_no').click(function() {
+            //     $("#entry").toggle(this.checked);
+            //     $("#dly_log").toggle(this.checked);
+            //     // $("input").prop('required',true);
+            // });
+            $('#emp_id').click(function() {
+                $("#empid").toggle(this.checked);
+                $("#dly_log").toggle(this.checked);
+            });
+            $('#emp_name').click(function() {
+                $("#empname").toggle(this.checked);
+                $("#dly_log").toggle(this.checked);
+            });
+            $('#shift').click(function() {
+                $("#shifts").toggle(this.checked);
+                $("#dly_log").toggle(this.checked);
+            });
+            $('#dpmt').click(function() {
+                $("#dpmts").toggle(this.checked);
+                $("#dly_log").toggle(this.checked);
+            });
+            $('#date').click(function() {
+                $("#dtss").toggle(this.checked);
+                $("#dly_log").toggle(this.checked);
+            });
+
+            $('select[multiple]').multiselect();
+
+            $('#shifts').multiselect({
+                columns: 1,
+                placeholder: 'Select Shift',
+            });
+
+            $('#dpmts').multiselect({
+                columns: 1,
+                placeholder: 'Select Department',
+            });
+
+            $('ul').css('list-style', 'none');
+            
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementsByName("to_date")[0].setAttribute('max', today);
+
+    });
+
+    </script>
+    <style>
+        ul {
+            list-style: none;
+            margin: 0px 0px 5px;
+        }
+        .ms-options-wrap > .ms-options > ul li.selected label,
+ 
+        .ms-options-wrap > .ms-options > ul label:hover {
+         
+        background-color: #ddddff;
+         
+        }
+
+        .okay{
+            border-color:#0F0;
+            border-radius: 4px;
+            border-width: 4px;
+        }
+        .error{
+            border-color:#F00;
+        }
+        .weekDays-selector input {
+          display: none!important;
+        }
+
+        .weekDays-selector input[type=checkbox] + label {
+          display: inline-block;
+          border-radius: 6px;
+          background: #dddddd;
+          height: 30px;
+          width: 150px;
+          margin-right: 3px;
+          line-height: 30px;
+          text-align: center;
+          cursor: pointer;
+        }
+
+        .weekDays-selector input[type=checkbox]:checked + label {
+          background: #2AD705;
+          color: #ffffff;
+        }
+
+        .weekDays-selector-2 input {
+          display: none!important;
+        }
+
+        .weekDays-selector-2 input[type=checkbox] + label {
+          display: inline-block;
+          border-radius: 6px;
+          background: #dddddd;
+          height: 30px;
+          width: 150px;
+          margin-right: 3px;
+          line-height: 30px;
+          text-align: center;
+          cursor: pointer;
+        }
+
+        .weekDays-selector-2 input[type=checkbox]:checked + label {
+          background: #2AD705;
+          color: #ffffff;
+        }
+        .table td, .table th{
+            padding: .75rem;
+            width: 500;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+    </style> 
+</head>
+{% extends "layout.html" %}
+    {% block content %}
+    <div class="container">
+        <form action={{ url_for('print_dly_logs') }} method="post" name="reportform">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <h2> Show Daily Reports</h2>
+                    <table class="table table-sm">
+                        <th colspan="2"> Select Parameters </th>
+                        <tr class="table-info"> 
+                            <td class = "weekDays-selector">
+                            <!-- <input type="checkbox" id="en_no" class="weekday" >
+                                <label for="en_no">Entry Number</label> -->
+                            <input type="checkbox" id="emp_id" class="weekday" >
+                                <label for="emp_id">Employee ID</label>
+                            <input type="checkbox" id="emp_name" class="weekday" >
+                                <label for="emp_name">Employee Name</label>
+                            <!-- </td></tr>
+                        <tr class="table-info"> 
+                            <td class = "weekDays-selector"> -->
+                            <input type="checkbox" id="shift" class="weekday" >
+                                <label for="shift">Shift</label>
+                            <input type="checkbox" id="dpmt" class="weekday" >
+                                <label for="dpmt">Department</label>
+                            <input type="checkbox" id="date" class="weekday" >
+                                <label for="date">Date</label>
+                        </td></tr>
+                        <!-- <tr class="table-info"> 
+                            <td class = "weekDays-selector">
+                            <input type="checkbox" id="all" class="weekday" >
+                                <label for="all">Select All</label>
+                            </td>
+                        </tr> -->
+                            <th colspan="2"> Select Specific Reports </th>
+                        <tr class="table-info" id="sts">
+                            <td class = "weekDays-selector-2">
+                            <input type="checkbox" id="lc" class="weekday2" name="lc" value="Late Comer">
+                                <label for="lc">Late Comer</label>
+                            <input type="checkbox" id="el" class="weekday2" name="el" value="Early leaver">
+                                <label for="el">Early leaver</label>
+                            <input type="checkbox" id="mp" class="weekday2" name="mp" value="Mispunched">
+                                <label for="mp">Mispunched</label>
+                            <input type="checkbox" id="absent" class="weekday2" name="absent" value="Full Day Absent">
+                                <label for="absent">Full Day Absent</label>
+                            <input type="checkbox" id="gw" class="weekday2" name="gw" value="Good Working">
+                                <label for="gw">Good Working</label>
+                            <input type="checkbox" id="present" class="weekday2" name="present" value="Present">
+                                <label for="present">Present</label>
+                            </td></tr>
+                        <tr class="table-info"> 
+                            <td class = "weekDays-selector-2">
+                            <input type="checkbox" id="hlf_day" class="weekday2" name="hlf_day" value="Half Day Leave">
+                                <label for="hlf_day">Half Day Leave</label>
+                            <input type="checkbox" id="full_day_leave" class="weekday2" name="full_day_leave" value="Full Day Leave">
+                                <label for="full_day_leave">Full Day Leave</label>
+                            <input type="checkbox" id="weeklyoff" class="weekday2" name="weeklyoff" value="Weekly Off">
+                                <label for="weeklyoff">Weekly Off</label>
+                            <input type="checkbox" id="comp_hldy" class="weekday2" name="comp_hldy" value="Company Holiday">
+                                <label for="comp_hldy">Company Holiday</label>
+                            <input type="checkbox" id="dept_hldy" class="weekday2" name="dept_hldy" value="Department Holiday">
+                                <label for="dept_hldy">Department Holiday</label>
+                            <!-- <input type="checkbox" id="all" class="weekday" >
+                                <label for="all">Select All</label> -->
+                            </td>
+                        </tr>
+                        </tr>
+                    
+                </table>
+                <table class="table table-hover" id="t2" style="display:none">
+                        <th colspan="2"> Enter Parameters </th>
+                        <!-- <tr class="table-info" id="entry" style="display:none"><td> Enter Total Number of entries</td>
+                            <td> <input type='number' name='start_ent' value= 0 style="width:50px;" >  
+                                 to <input type='number' name='end_ent' value= 100 style="width:50px;"  >
+                            </td>
+                        </tr> -->
+                        <tr class="table-info" id="empid" style="display:none"><td> Enter Employee ID (separated with a ";")</td>
+                            <td> <input type='text' name='empid' style="width:500px;"> 
+                            </td>
+                        </tr>
+                        <tr class="table-info" id="empname" style="display:none"><td> Enter Employee Name (separated with a ";")</td>
+                            <td> <input type='text' name='empname' style="width:500px;"> 
+                            </td>
+                        </tr>
+                        <tr class="table-info" id="shifts" style="display:none"><td> Select Shift</td>
+                            <td> <select name="shifts" multiple id="shifts">
+                                    {% for row in shifts %}
+                                    <option value="{{row[1]}}">{{row[1]}}</option>
+                                    {% endfor %}
+                                </select> 
+                            </td>
+                        </tr>
+                        <tr class="table-info" id="dpmts" style="display:none"><td> Select Department</td>
+                            <td> <select name="dpmts" multiple id="dpmts">
+                                    <option value=" "> Select Department</option>
+                                    {% for row in departments %}
+                                    <option value="{{row[1]}}">{{row[1]}}</option>
+                                    {% endfor %}
+                                </select> 
+                            </td>
+                        </tr>
+                        <tr class="table-info" id="dtss" style="display:none"><td> Enter Dates</td>
+                            <td> From <input type='date' name='from_date' id="from_date" style="width:200px;"> To <input type='date' name='to_date' id="to_date" style="width:200px;">
+                            </td>
+                        </tr>
+                        <tr class="table-info" style="display:none"><td></td></tr>
+                        <tr class="table-info" style="display:none"><td></td></tr>
+                        <tr class="table-info" style="display:none"><td></td></tr>
+                <button id='dly_log' type='submit' class="btn btn-primary btn btn-block active" style="width:150px;">Show Daily Logs</button> 
+                </table>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endblock %}

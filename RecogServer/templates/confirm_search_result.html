@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+    {% block content %}
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <table class="table table-hover">
+
+                <form action={{ url_for('execute_search_action') }} method='post' name='enroll' onclick=''>
+
+                    <input type='hidden' name='search_action' value={{ mode }}>
+                    
+                    <thead class="thead-light">
+                        <tr>
+                            <th colspan="3" style="text-align: center;">Details</th>
+                            <th style="text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    {% for det in details %}
+                        <tr>
+                            <td class="table-info">Registration Id</td><td class="table-info">{{ det[0] }}</td>
+                            <td rowspan="4">
+                                {% for img_url in det[4] %}
+                                    <img src={{ url_for('get_db_faces', filename=img_url) }} style="width: 100px; height: auto;" >
+                                {% endfor %}
+                            </td>
+                            
+                            {% if mode == 'update' %}
+                                {% if det[2] == det[6] %}
+                                    <td>Category will not change.</td>
+                                {% else %}
+                                    <input type='hidden' name='update_{{ det[0] }}' value={{ det[5] }}>
+                                    {% if det[6] == 'HOD' %}
+                                        <td class='table-success'>This entry will be <b>changed</b> to HOD.</td>
+                                    {% elif det[6] == 'Employee' %}
+                                        <td class='table-success'>This entry will be <b>changed</b> to Employee.</td>
+                                    {% else %}
+                                        <td class='table-danger'>This entry will be <b>changed</b> to {{det[6]}}.</td>
+                                    {% endif %}
+                                {% endif %}
+                            {% elif mode == 'delete' %}
+                                <input type='hidden' name='delete_{{ det[0] }}' value={{ det[0] }}>
+                                <td class='table-danger'>This entry will be deleted.</td>
+                            {% endif %}
+                            
+                        </tr>
+                        <tr>
+                            <td class="table-info">Name</td><td class="table-info">{{ det[1] }}</td>
+                            {% if mode == 'update' %}
+                                {% if det[7] == 'y' %}
+                                    <td class="table-danger">Shift will be updated to <b>{{ det[9][1] }}</b></td>
+                                {% else %}
+                                    <td>Shift will not change.</td>
+                                {% endif %}
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            {% if det[2] == 'Employee' %}
+                                <td class='table-success'>Category</td><td class='table-success'>{{det[2]}}</td>
+                            {% elif det[2] == 'HOD' %}
+                                <td class='table-success'>Category</td><td class='table-success'>{{det[2]}}</td>
+                            {% else %}
+                                <td class='table-danger'>Category</td><td class='table-danger'>{{det[2]}}</td>
+                            {% endif %}
+                            {% if mode == 'update' %}
+                                {% if det[8] == 'y' %}
+                                    <td class="table-danger" style="width:500px;">Department will be updated to <b>{{ det[10][1] }}</b></td>
+                                {% else %}
+                                    <td>Department will not change.</td>
+                                {% endif %}
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td class='table-info'>Shift</td><td class='table-info'>{{ det[3][1] }}</td>
+                        </tr>
+                        <tr>
+                            <td class='table-info'>Department</td><td class='table-info' style="width:500px;">{{ det[5][1] }}</td>
+                        </tr>
+                        <tr></tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3"></td>
+                        <td>
+                            <button type='submit' name='confirm' class="btn btn-primary">Confirm</button>
+                            <button type="submit" name='reset' class="btn btn-light">Reset</button>
+                        </td>
+                    </tr>
+                </form>
+            </table>
+        </div>
+    </div>
+    {% endblock %}

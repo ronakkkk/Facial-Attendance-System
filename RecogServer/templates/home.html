@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+    {% block content %}
+
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <table class="table table-hover">
+                <tr></tr>
+                <tr></tr>
+            </table>
+            <table class="table table-hover">
+                {% if is_admin %}
+                <tr>
+                    <td><a href={{ url_for('update_employee') }} class="btn btn-primary btn-lg btn-block active" role="button" aria-pressed="true">Update Employee</a></td>
+                    <td><a href={{ url_for('update_dpmt') }} class="btn btn-primary btn-lg btn-block active" role="button" aria-pressed="true">Update Department</a></td> 
+                </tr>
+                <tr>
+                    <td><a href={{ url_for('show_roster_page') }} class="btn btn-primary btn-lg btn-block active" role="button" aria-pressed="true">Add Shift</a></td>
+                    <td><a href={{ url_for('details_department') }} class="btn btn-primary btn-lg btn-block active" role="button" aria-pressed="true">Add Department</a></td>
+                </tr>
+                
+                <tr>
+                    <td><a href={{ url_for('details_category') }} class="btn btn-primary btn-lg btn-block active" role="button" aria-pressed="true">Add Category</a></td>
+                    <td><a href={{ url_for('details_location') }} class="btn btn-primary btn-lg btn-block active" role="button" aria-pressed="true">Add Office's Location</a></td>
+                </tr>
+                <tr>
+                    <td td colspan="2"><a href={{ url_for('show_logs_page') }} class="btn btn-primary btn-lg btn-block active" role="button" aria-pressed="true">Reports</td></td>
+                </tr>
+                <tr>
+                    <td td colspan="2"><a href={{ url_for('show_alert_page') }} class="btn btn-danger btn-lg btn-block active" role="button" aria-pressed="true">Show Alerts</a></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><a href={{ url_for('shutdown') }} role="button" aria-pressed="true" style="float: right;">
+                        <img src={{ url_for('get_file', filename='shutdown') }} style='width: 50px; height: auto;'>
+                    </a></td>
+                </tr>
+                {% endif %}
+        
+
+            </table>
+        </div>
+    </div>
+
+    {% endblock %}

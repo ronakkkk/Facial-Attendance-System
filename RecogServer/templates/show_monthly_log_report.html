@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+    {% block content %}
+
+    {% if mode == 'all' or mode == 'online' %}
+                <iframe src={{ url_for('monthly_table_display') }} width="100%" height="600px"></iframe>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <a href={{ url_for('download_log', filename=download_file) }} class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Download Monthly Log</a>
+            <br /><br /><br /><br />
+
+
+        </div>
+    </div>
+
+    {% endblock %}

@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+    {% block content %}
+
+
+    <div style="margin-left: 60px;">
+        <form action={{ url_for('update_user_face') }} method='post' name='enroll' onclick='' enctype="multipart/form-data">
+            <div class="row ">
+                <div class="col-auto">
+                    <table class="table table-hover">
+                        <tr>
+                            <td colspan="2" class="text-center" style="font-size: x-large;">Update Face</td> 
+                        </tr>
+                        <tr>
+                            <td><label for='rid' >Registration Id</label></td>
+                            <td><input type='text' name='rid' required /></td>
+                        </tr>
+                        <tr>
+                            <td><label for='userimage'>Image</label></td>
+                            <td><input id='userimage' type='file' name='userimage'  multiple='false' autocomplete='off' accept='.jpg, .jpeg, .png'></td>
+                        </tr>
+                        <tr>
+                            <td><button type='reset' class="btn btn-secondary btn-lg btn-block active">Reset</button></td>
+                            <td><button type='submit' class="btn btn-primary btn-lg btn-block active" id='register'>Update Face</button></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    {% endblock %}

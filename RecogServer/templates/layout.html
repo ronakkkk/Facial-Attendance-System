@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <link rel="stylesheet" href={{ url_for('get_file', filename='bs-css') }} id="bs">
+        <script src={{ url_for('get_file', filename='jq') }}></script>
+        <script src={{ url_for('get_file', filename='popper') }}></script>
+        <script src={{ url_for('get_file', filename='bs-js') }}></script>
+        <script src={{ url_for('get_file', filename='mjq') }}></script>
+        <link rel="shortcut icon" href={{ url_for('get_file', filename='favicon') }} type="image/x-icon">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <title>Team JNR Face Recognition Attendance System</title>
+    </head>
+    <style>
+        .btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle{
+            background-color: #4045d2;
+            border-radius: 18px;  
+        }
+        .btn-dark, .btn-secondary{
+            border-radius: 18px;
+        }
+        .dropbtn {
+          background-color: #04AA6D;
+          color: white;
+          padding: 9px;
+          font-size: 19px;
+          border: none;
+          border-radius: 18px;
+          height: 45px; 
+        }
+        .htop{
+            color: white;
+        }
+
+    </style>
+    <body>
+        <nav class="navbar navbar-expand-sm fixed-top navbar-light" style="background-color: #0110e3;">
+            <div class="container-fluid" style="height: 40px;">
+                <!-- <img src={{ url_for('get_file', filename='logo') }} style="width: 100px; height: 40px; float:left; top: 0; left: calc(0%)"> -->
+                <div class='h3 htop'>Team JNR - Face Recognition Attendance System</div>
+                {% if logged_in %}
+                    <ul class="nav navbar-nav navbar-left">
+                        <a href={{ url_for('go_home') }} role="button" aria-pressed="true" style="float: right;">
+                            <img src={{ url_for('get_file', filename='home') }} style='width: 50px; height: auto; border: 3px solid #0110e3; border-radius: 60px;'>
+                        </a>
+                        <li>
+                            <div class="dropdown" style="float: right;">
+                                <button class="dropdown-toggle dropbtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Hi {{ operator_id }}!!
+                                </button>                        
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                        <!--<a href={{ url_for('change_password') }} class="btn btn-secondary active" style="float: right;" role="button" aria-pressed="true" >Change Password</a>-->
+                                        <!--<a href={{ url_for('logout') }} class="btn btn-primary active" style="float: right;" role="button" aria-pressed="true" >Logout</a>-->
+                                        <a href={{ url_for('change_password') }} class="dropdown-item">Change Password</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href={{ url_for('logout') }} class="dropdown-item">Logout</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                {% endif %}
+                
+            </div>
+        </nav>
+        <br> <br>
+        {% for message in get_flashed_messages() %}
+        <div class='alert alert-warning text-center'>
+            <button type='button' class='close' data-dismiss='alert'>&times;</button>
+            {{message}}
+        </div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+
+    </body>
+</html>

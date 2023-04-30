@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+    {% block content %}
+
+    <h2 class="mb-3" style="font-weight: 100">Running Recognition on {{ filename }}</h2>
+    Completion (%): 
+    <div class="progress" style="width: 90%; height: 30px; margin: 50px;">
+        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+            <span class="progress-bar-label">0%</span>
+        </div>
+    </div>
+    <br />
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <table class="table table-hover">
+                <tr>
+                    <td>
+                        <form action={{ url_for('go_home') }} method='post' onclick=''>
+                            <button type='submit' name='goback' id='goback' class='btn btn-secondary btn-lg active d-none'>Home</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a href={{ url_for('get_video_file', filename=processed_video) }} id='processed_file' class="btn btn-primary btn-lg active d-none" role="button" aria-pressed="true">Download Processed Video</a>
+                    </td>
+                    <td>
+                        <form action={{ url_for('show_logs') }} method="post" onclick="">
+                            <input type='hidden' id='lrid' name='lrid' value=''>
+                            <input type='hidden' id='lrname' name='lrname' value=''>
+                            <input type='hidden' id='startdate' name='startdate' value=''>
+                            <input type='hidden' id='enddate' name='enddate' value=''>
+                            <input type='hidden' id='location' name='location' value={{ log_location }}>
+                            <input type='hidden' id='recog_mode' name='recog_mode' value='offline'>
+                            <button type='submit' id='showlogbutton' name='showlogbutton' class='btn btn-success btn-lg actve d-none'>Show Logs</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+
+        var source = new EventSource("{{ url_for('recog_progress', identifier=identifier) }}");
+        var startDate = new Date().toISOString().slice(0, 10);
+        source.onmessage = function(event) {
+            $('.progress-bar').css('width', event.data+'%').attr('aria-valuenow', event.data);
+            $('.progress-bar-label').text(event.data+'%');
+
+            if(event.data == 100){
+                source.close();
+                var endDate = new Date().toISOString().slice(0, 10);
+                document.getElementById('startdate').setAttribute('value', startDate);
+                document.getElementById('enddate').setAttribute('value', endDate);
+                document.getElementById('goback').classList.remove('d-none');
+                document.getElementById('processed_file').classList.remove('d-none');
+                document.getElementById('showlogbutton').classList.remove('d-none');
+            }
+        }
+        
+	</script>
+
+    {% endblock %}

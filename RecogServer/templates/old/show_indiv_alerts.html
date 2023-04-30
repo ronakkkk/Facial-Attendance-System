@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+    {% block content %}
+
+    <div class="row justify-content-center">
+        <div class="col-auto">
+
+            <table class="table table-hover">
+                {% for det in values %}
+                    <tr>
+                        <td></td>
+                        <td class="table-info">Registration Id</td><td class="table-info">{{ det[0] }}</td>
+                        <td rowspan="5">
+                            {% for img_url in det[3] %}
+                                <img src={{ url_for('get_db_faces', filename=img_url) }} style="width: 100px; height: auto;" >
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="table-info">Name</td><td class="table-info">{{ det[1] }}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        {% if det[2] == 'y' %}
+                            <td class='table-danger'>Threat</td><td class='table-danger'>Yes</td>
+                        {% else %}
+                            <td class='table-success'>Threat</td><td class='table-success'>No</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class='table-info' rowspan="2">Last Seen</td><td class='table-info'>On {{ det[4] }}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class='table-info'>Near {{ det[5] }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center;">
+                            <a href={{ url_for('download_log', filename=det[6]) }} class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Download Log</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        {%for colname in det[7] %}
+                            <td>{{ colname }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% for colvalue in det[8] %}
+                    <tr>
+                        {% for cv in colvalue %}
+                            <td>{{ cv }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4"></td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+        </div>
+    </div>
+
+    {% endblock %}

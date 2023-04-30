@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+{% block content %}
+    <form action={{ url_for('confirm_details') }} method='post' name='confirmdetails'>
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <table class="table table-hover">
+                    <tr class="table-active text-center">
+                        <th colspan="2">Please Confirm Face Details</th>
+                    </tr>
+                    <tr class="table-info">
+                        <td>Registration id</td>
+                        <td><input type='text' value={{ user_id }} disabled>
+                            <input type='hidden' name='rid' value={{ user_id }} required></td>
+                    </tr>
+                    <tr class="table-info">
+                        <td>First name</td>
+                        <td><input type='text' value={{ user_first_name }} disabled>
+                            <input type='hidden' name='ufname' value={{ user_first_name }} required></td>
+                    </tr>
+                    <tr class="table-info">
+                        <td>Middle name</td>
+                        <td><input type='text' disabled value={{ user_middle_name }}>
+                            <input type='hidden' name='umname' value={{ user_middle_name }}></td>
+                    </tr>
+                    <tr class="table-info">
+                        <td>Last name</td>
+                        <td><input type='text' value={{ user_last_name }} disabled>
+                            <input type='hidden' name='ulname' value={{ user_last_name }} required></td>
+                    </tr>
+                    <tr class="table-active">
+                        <td>Select Image</td>
+                        <td>
+                            {% for img in disp_url%}
+                                <input type='radio' name='indiv' value={{ img[0] }} required/>
+                                <img src={{ img[1] }} style="width: 100px; height: auto;"/>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% if threat == 'y' %}
+                    <tr class="table-danger">
+                    {% else %}
+                    <tr class="table-success">
+                    {% endif %}
+                        <td>Threat</td>
+                        <td>
+                            {% if threat == 'y' %}
+                                <p>This individual will be marked as a threat.</p>
+                            {% else %}
+                                <p>This individual will <b>not</b> be marked as threat.</p>
+                            {% endif %}
+                            <input type='hidden' name='threat' value={{ threat }} required>
+                        </td>
+                    </tr>
+                    <tr class="table-info">
+                        <td>Shift</td>
+                        <td>{{ shift[1] }}
+                            <input type='hidden' name='shift' value={{ shift[0] }} required></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="table-warning">
+                            <p style="color:red; font-weight: bold;">Please check details carefully and read image instruction before confirming.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <button id='confirm' name='confirm' type='submit' class="btn btn-primary btn-lg btn-block active">Confirm</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </form>
+
+    <form action={{ url_for('confirm_details') }} method='post' name='confirmdetails'>
+        <p style="font-size: large;" ><b>Image Instruction</b></p>
+        <ol>
+            <li>All photos should be front facing (passport size).</li>
+            <li>There should not be light reflection from backside of the user while taking picture.</li>
+            <li>Camera should be adjusted to focus on the user face instead ceiling.</li>
+            <li>Temperature and date/time stamp should not be printed on user photo.</li>
+            <li>Faces should not be titled up or down or sideways for training purposes.</li>
+            <li>Light should face the person so that the face is clearly visible and no shadows form on the face.</li>
+            <li>Full face should come in the recognition picture, some picture are cut and partial face is visible. Full face means ear to ear from the sides and hair to chin from top to bottom.</li>
+        </ol>
+        <br>
+        <button id='reset' name='reset' type='submit' class="btn btn-secondary btn-lg active">Reset</button>
+        <br>
+        <p><b>Example of Bad Pictures</b></p>
+            <img src={{ url_for('get_bad_img', fileid=1) }} style="width: 200px; height: auto;">
+            <img src={{ url_for('get_bad_img', fileid=2) }} style="width: 200px; height: auto;">
+            <img src={{ url_for('get_bad_img', fileid=3) }} style="width: 200px; height: auto;">
+        <p><b>Example of Good Pictures</b></p>
+            <img src={{ url_for('get_good_img', fileid=1) }} style="width: 100px; height: auto;">
+            <img src={{ url_for('get_good_img', fileid=1) }} style="width: 100px; height: auto;">
+        <br />
+        
+    </form>
+
+{% endblock %}

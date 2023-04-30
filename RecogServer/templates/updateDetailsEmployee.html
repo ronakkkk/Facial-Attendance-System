@@ -1,0 +1,256 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href={{ url_for('get_file', filename='mcss') }} id="mcss">
+    <script src={{ url_for('get_file', filename='jq') }}></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            var row = "{{ emp_dict| safe }}";
+              console.log(row);
+              row = row.replace(/'/g,"\"") // JSON only accepts ", not ' so replacing
+              row = row.replaceAll("nan", "0")  
+                   .replaceAll("None", "0")
+                   .replaceAll("nan", "0")
+                   .replace(/\\&/g, "\\&")
+                   .replace(/\\r/g, "\\r")
+                   .replace(/\\t/g, "\\t")
+                   .replace(/\\b/g, "\\b")
+                   .replace(/\\f/g, "\\f");
+
+            row = row.replace(/[\u0000-\u0019]+/g,""); 
+            var rows = JSON.parse(row)
+            console.log(rows);
+
+            var arr = [];
+            $('.weekDays-selector').on("change", function(){
+                $("#t2").show()
+                $("#cam_log").show()
+
+            });
+            // $('#loc').click(function() {
+            //     $("#location").toggle(this.checked);
+            //     $("#cam_log").toggle(this.checked);
+            // });
+            $('#empsts').click(function() {
+                $("#status").toggle(this.checked);
+                $("#cam_log").toggle(this.checked);
+            });
+            $('#emp_name').click(function() {
+                $("#empname").toggle(this.checked);
+                $("#cam_log").toggle(this.checked);
+            });
+            $('#shift').click(function() {
+                $("#shifts").toggle(this.checked);
+                $("#cam_log").toggle(this.checked);
+            });
+            $('#dpmt').click(function() {
+                $("#dpmts").toggle(this.checked);
+                $("#cam_log").toggle(this.checked);
+            });
+            $('#date').click(function() {
+                $("#dtss").toggle(this.checked);
+                $("#cam_log").toggle(this.checked);
+            });
+
+            var first_entry = Object.keys(rows)[0];
+            $("#en").text('Employee Name: '+rows[first_entry]['empname'])
+            $("#ed").text('Employee Department: '+rows[first_entry]['emp_dpmt'])
+            $("#est").text('Employee Category: '+rows[first_entry]['empstatus'])
+            $("#esh").text('Employee Shift: '+rows[first_entry]['currshift'])
+            $("#el").text('Employee Location: '+rows[first_entry]['location'])
+            
+            $('#eid').on('change', function(){
+                var empid = $(this).val();
+                if(empid != '')
+                    {
+                        for (var key in rows)
+                        {
+                            if(key == empid)
+                            {
+                                console.log(rows[key]['empname'])
+                                $("#en").text('Employee Name: '+rows[key]['empname'])
+                                $("#ed").text('Employee Department: '+rows[key]['emp_dpmt'])
+                                $("#est").text('Employee Category: '+rows[key]['empstatus'])
+                                $("#esh").text('Employee Shift: '+rows[key]['currshift'])
+                                $("#el").text('Employee Location: '+rows[key]['location'])
+                            }                    
+                        }
+                    }
+                else{
+                    $("#en").text('Employee Name: '+rows[first_entry]['empname'])
+                    $("#ed").text('Employee Department: '+rows[first_entry]['emp_dpmt'])
+                    $("#est").text('Employee Category: '+rows[first_entry]['empstatus'])
+                    $("#esh").text('Employee Shift: '+rows[first_entry]['currshift'])
+                    $("#el").text('Employee Location: '+rows[first_entry]['location'])
+                }
+                console.log('w', empid)
+            });
+
+            $('select[multiple]').multiselect();
+
+            $('#shifts').multiselect({
+                columns: 1,
+                placeholder: 'Select Shift',
+            });
+
+            $('#dpmts').multiselect({
+                columns: 1,
+                placeholder: 'Select Department',
+            });
+
+            // $('#location').multiselect({
+            //     columns: 1,
+            //     placeholder: 'Select Location',
+            // });
+
+            $('ul').css('list-style', 'none');
+
+            // var today = new Date().toISOString().split('T')[0];
+            // document.getElementsByName("to_date")[0].setAttribute('max', today);
+
+    });
+
+    </script>
+    <style>
+        ul {
+            list-style: none;
+            margin: 0px 0px 5px;
+        }
+        .okay{
+            border-color:#0F0;
+            border-radius: 4px;
+            border-width: 4px;
+        }
+        .error{
+            border-color:#F00;
+        }
+        .weekDays-selector input {
+          display: none!important;
+        }
+
+        .weekDays-selector input[type=checkbox] + label {
+          display: inline-block;
+          border-radius: 6px;
+          background: #dddddd;
+          height: 30px;
+          width: 150px;
+          margin-right: 3px;
+          line-height: 30px;
+          text-align: center;
+          cursor: pointer;
+        }
+
+        .weekDays-selector input[type=checkbox]:checked + label {
+          background: #2AD705;
+          color: #ffffff;
+        }
+    </style> 
+</head>
+{% extends "layout.html" %}
+    {% block content %}
+    <div>
+        <form action={{ url_for('confirm_emp_details') }} method="post" name="reportform"> 
+            <!-- redirect to confirm_details -->
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <h2> Change Details</h2>
+                     <table class="table table-hover table-sm">
+                        <th colspan="2"> Current Employee Details (Total {{empid|length}} employees found) </th>
+                        <tr class="table-info">    
+                            <td> Employee ID:    
+                                    <select name="eid" id="eid">
+                                        <!-- <option value=""> Select Employee ID</option> -->
+                                        {% for row in empid %}
+                                            <option value="{{row}}">{{row}}</option>
+                                        {% endfor %}
+                                    </select>
+                            </td>
+                            <td id="en"> Employee Name:  </td>
+                            <td id="ed"> Employee Department:  </td>
+                        </tr>
+                        <tr class="table-info">
+                            <td id="est"> Employee Category:  </td>
+                            <td id="esh"> Employee Shift:  </td>
+                            <td id="el">Employee Location: </td>
+                        </tr>
+                    </table>
+                    <table class="table table-sm">
+                        <th colspan="2"> Select Updating Parameters </th>
+                        <tr class="table-info"> 
+                            <td class = "weekDays-selector">
+                            <input type="checkbox" id="emp_name" class="weekday" >
+                                <label for="emp_name">Employee Name</label>
+                            <input type="checkbox" id="dpmt" class="weekday" >
+                                <label for="dpmt">Department</label>
+                            <input type="checkbox" id="shift" class="weekday" >
+                                <label for="shift">Shift</label>
+                            <input type="checkbox" id="empsts" class="weekday" >
+                                <label for="empsts">Employee Category</label>
+                            </td></tr>
+                        <!-- <tr class="table-info"> 
+                            <td class = "weekDays-selector"> -->
+                            <!-- <input type="checkbox" id="loc" class="weekday" >
+                                <label for="loc">Location</label> -->
+                            <!-- <input type="checkbox" id="empsts" class="weekday" >
+                                <label for="empsts">Employee Status</label> -->
+                            <!-- <input type="checkbox" id="wkly_off" class="weekday" >
+                                <label for="wkly_off">Weekly Off</label> -->
+                        <!-- </td></tr> -->
+                        <!-- <tr class="table-info"> 
+                            <td class = "weekDays-selector">
+                            <input type="checkbox" id="all" class="weekday" >
+                                <label for="all">Select All</label>
+                            </td>
+                        </tr> -->
+                    </tr>
+                </table>
+                <table class="table table-hover" id="t2" style="display:none">
+                        <th colspan="2"> Enter Parameters </th>
+                        <tr class="table-info" id="empname" style="display:none"><td> Enter Employee Name</td>
+                            <td> <input type='text' name='empname' style="width:500px;"> 
+                            </td>
+                        </tr>
+                        <tr class="table-info" id="shifts" style="display:none"><td> Select Shift</td>
+                            <td> <select name="shifts" id="shifts">
+                                    <option value=""> Select Shift</option>
+                                    {% for row in shifts %}
+                                    <option value="{{row[0]}}">{{row[1]}}</option>
+                                    {% endfor %}
+                                </select> 
+                            </td>
+                        </tr>
+                        <!-- <tr class="table-info" id="location" style="display:none"><td> Select Location</td>
+                            <td> <select name="location"  id="location">
+                                    <option value=""> Select Location</option>
+                                    {% for row in loc %}
+                                    <option value="{{row}}">{{row}}</option>
+                                    {% endfor %}
+                                </select> 
+                            </td>
+                        </tr> -->
+                        <tr class="table-info" id="status" style="display:none"><td> Select Category</td>
+                            <td> <select name="status"  id="status">
+                                    <option value=""> Select Category</option>
+                                    {% for row in status %}
+                                    <option value="{{row}}">{{row}}</option>
+                                    {% endfor %}
+                                </select> 
+                            </td>
+                        </tr>
+                        <tr class="table-info" id="dpmts" style="display:none"><td> Select Department</td>
+                            <td> <select name="dpmts" id="dpmts" >
+                                    <option value=""> Select Department</option>
+                                    {% for row in department %}
+                                    <option value="{{row[0]}}">{{row[1]}}</option>
+                                    {% endfor %}
+                                </select> 
+                            </td>
+                        </tr>
+                </table>
+                <button id='cam_log' name='cam_logs' type='submit' class="btn btn-primary btn btn-block active" style="display:none">Update</button> 
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endblock %}

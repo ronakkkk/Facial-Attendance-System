@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+    {% block content %}
+
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <a href={{ url_for('download_log', filename=download_file) }} class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Download Monthly Log</a>
+            <br /><br /><br /><br />
+
+            {% if mode == 'all' or mode == 'online' %}
+                <iframe src={{ url_for('monthly_table_display') }} width="100%" height="450px"></iframe>
+                <!-- <h3 style="font-size: x-large;">{{name}}</h3>
+                <table class="table table-hover">
+
+                    <thead class="thead-light">
+                        <tr>
+                            {% for col in online_columns %}
+                                <td>{{ col }}</td>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vals in online_values %}
+                            {% if vals[2] == 'y' %}
+                                <tr class="table-danger">
+                            {% else %}
+                                <tr>
+                            {% endif %}
+                                {% for v in vals %}
+                                    <td>{{ v }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table> -->
+            {% endif %}
+
+        </div>
+    </div>
+
+    {% endblock %}

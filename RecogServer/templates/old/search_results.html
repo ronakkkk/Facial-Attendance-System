@@ -1,0 +1,152 @@
+{% extends "layout.html" %}
+    {% block content %}
+
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <table class="table table-hover">
+                <form action={{ url_for('search_action_confirm') }} method='post' name='enroll' onclick=''>
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Select for <br> Update/Delete</th>
+                            <th colspan="3" style="text-align: center;">Details</th>
+                            <th>Category</th>
+                            <th>Update <br>Shift</th>
+                            <th>Update <br>Department</th>
+                        </tr>
+                    </thead>
+                    {% for det in details %}
+                        <input type='hidden' name='processed_{{ det[0] }}' value=''>
+                        <tr>
+                            <td rowspan="5">
+                                <input type='checkbox' name={{ det[0] }} value={{ det[0] }} onclick="checkEnable()">
+                            </td>
+                            <td class="table-info">Registration Id</td><td class="table-info">{{ det[0] }}</td>
+                            <td rowspan="5">
+                                {% for img_url in det[4] %}
+                                    <img src={{ url_for('get_db_faces', filename=img_url) }} style="width: 100px; height: auto;" >
+                                {% endfor %}
+                            </td>
+                            <!-- <td rowspan="4">
+                                {% if det[2] == 'y' %}
+                                    <input type='radio' name='threat_{{ det[0] }}' value='n'> No
+                                    <input type='radio' name='threat_{{ det[0] }}' value='y' checked> Yes
+                                {% else %}
+                                    <input type='radio' name='threat_{{ det[0] }}' value='n' checked> No
+                                    <input type='radio' name='threat_{{ det[0] }}' value='y'> Yes
+                                {% endif %}
+                            </td> -->
+                            <td rowspan="5">
+                                <select id='upuserstatus' name='upuserstatus_{{ det[0] }}'>
+                                    {% for st in status_list %}
+                                        {% if st == det[2] %}
+                                            <option value={{ st }} selected>{{ st }}</option>
+                                        {% else %}
+                                            <option value={{ st }}>{{ st }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td rowspan="5">
+                                <select id='upusershift' name='upusershift_{{ det[0] }}'>
+                                    {% for sh in shift_list %}
+                                        {% if sh[0] == det[3][0] %}
+                                            <option value={{ sh[0] }} selected>{{ sh[1] }}</option>
+                                        {% else %}
+                                            <option value={{ sh[0] }}>{{ sh[1] }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td rowspan="5">
+                                <select id='upuserdept' name='upuserdept_{{ det[0] }}'>
+                                    {% for dept in department_list %}
+                                        {% if dept[0] == det[5][0] %}
+                                            <option value={{ dept[0] }} selected>{{ dept[1] }}</option>
+                                        {% else %}
+                                            <option value={{ dept[0] }}>{{ dept[1] }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-info">Name</td><td class="table-info">{{ det[1] }}</td>
+                        </tr>
+                        <tr>
+                            {% if det[2] == 'Employee' %}
+                                <td class='table-success'>Category</td><td class='table-success'>{{ det[2] }}</td>
+                            {% elif det[2] == 'HOD' %}
+                                <td class='table-success'>Category</td><td class='table-success'>{{ det[2] }}</td>
+                            {% else %}
+                                <td class='table-danger'>Category</td><td class='table-danger'>{{ det[2] }}</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td class="table-info">Shift</td><td class="table-info">{{ det[3][1] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-info">Department</td><td class="table-info">{{ det[5][1] }}</td>
+                        </tr>
+                        <tr></tr>
+                    {% endfor %}
+                    <tr>
+                        <td></td>
+                        <td>Confirm Password</td>
+                        <td colspan="3"><input type="password" name="password" id="password"></td>
+                        <td></td>
+                    </tr>
+                    {% if is_admin %}
+                    <tr>
+                        <td colspan='5'>
+                            From <input type='date' name='startdate' pattern='\d{4}-\d{2}-\d{2}' value={{ start_disp }} max={{ end_disp }}>
+                            -To <input type='date' name='enddate' pattern='\d{4}-\d{2}-\d{2}' value={{ end_disp }} max={{ end_disp }}>
+                            <input type="hidden" name"recog_mode" value="online"/>
+                        </td>
+                        <td>
+                            <button type="submit" name='show' id="log_button" class="btn btn-primary" onclick="return checkPwd();" disabled>Show Log</button>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td></td>
+                        <td colspan="4">
+                            <button type="submit" name='reset' class="btn btn-secondary">Reset</button>
+                            <button type="submit" name='update' id='update_button' class="btn btn-danger" onclick="return checkPwd();" disabled>Update Details</button>
+                            <button type="submit" name='delete' id='delete_button' class="btn btn-warning" onclick="return checkPwd();" disabled>Delete</button>
+                        </td>
+                        <td></td>
+                    </tr>
+                </form>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        var checkEnable = function(){
+            var is_checked = $('input[type=checkbox]:checked').length;
+            log_button = document.getElementById('log_button')
+            update_button = document.getElementById('update_button');
+            delete_button = document.getElementById('delete_button');
+            if(is_checked > 0){
+                log_button.disabled = false;
+                delete_button.disabled = false;
+                update_button.disabled = false;
+            }
+            else{
+                log_button.disabled = true;
+                delete_button.disabled = true;
+                update_button.disabled = true;
+            }
+        }
+
+        var checkPwd = function(){
+            var password_value = document.getElementById('password');
+            if (password_value.value.length == 0){
+                alert('Please provide password');
+                return false;
+            }
+            return true;
+       }
+    </script>
+
+    {% endblock %}

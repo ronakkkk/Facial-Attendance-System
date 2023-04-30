@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+    {% block content %}
+
+    <div class="container">
+        <form action={{ url_for('login') }} method="post" name="loginform">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <table class="table table-hover">
+                        <tr>
+                            <td colspan="2" class="text-center" style="font-size: x-large;">Login</td> 
+                        </tr>
+                        <tr>
+                            <td>Operator id</td>
+                            <td><input type="text" name="operatorid"></td>
+                        </tr>
+                        <tr>
+                            <td>Password</td>
+                            <td><input type="password" name="password"></td>
+                        </tr>
+                        <tr><td colspan="2" class="text-center"><button type="submit" name="login" class="btn btn-primary">Login</button></td></tr>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endblock %}
