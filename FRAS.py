@@ -211,4 +211,4 @@ if __name__ == '__main__':
 
     check_config(args)
     from src.load_config import CONFIG
-    run_server(args, CONFIG)
+    app = run_server(args, CONFIG)
