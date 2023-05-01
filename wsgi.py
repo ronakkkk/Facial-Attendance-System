@@ -1,2 +1,2 @@
-from FRAS import run_task
-app = run_task()
+import gunicorn
+from FRAS import *
