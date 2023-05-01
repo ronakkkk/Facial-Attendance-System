@@ -1,4 +1,2 @@
-from FRAS import run_server
-from src.load_config import CONFIG
-app = run_server("reset", CONFIG)
-# app = run_server()
+from FRAS import run_task
+app = run_task()

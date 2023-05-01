@@ -6,6 +6,8 @@ import threading
 import os
 import time
 from datetime import date, timedelta
+from flask import Flask
+app = Flask(__name__)
 
 class WorkerThread(threading.Thread):
 
@@ -154,7 +156,6 @@ def run_webapp(camera_ids, control_panel, webdisplay, progress_bar_memory, CONFI
 def run_server(args, CONFIG):
 
     # https://stackoverflow.com/questions/21120947/catching-keyboardinterrupt-in-python-during-program-shutdown
-
     face_db_file_path = os.path.normpath(CONFIG['DB']['face_db'])
     person_db_file_path = os.path.normpath(CONFIG['DB']['person_db'])
 
@@ -190,6 +191,7 @@ def run_server(args, CONFIG):
         args=(list(camera_ids.keys()), control_panel, webdisplay, progress_bar_memory, CONFIG))
 
     # First start
+    freeze_support()
     webapp_proc.start()
 
     work_th = lambda: WorkerThread(control_panel, vectors, people_list, face_db_file_path, person_db_file_path,CONFIG)
@@ -206,9 +208,8 @@ def run_server(args, CONFIG):
 
 
 if __name__ == '__main__':
-
+    # freeze_support()
     args = parse_argument()
-
     check_config(args)
     from src.load_config import CONFIG
     app = run_server(args, CONFIG)
